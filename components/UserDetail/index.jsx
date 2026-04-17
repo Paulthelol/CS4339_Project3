@@ -3,37 +3,28 @@ import React, { useState, useEffect } from 'react';
 import { Button, Typography } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
 import api from '../../lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 import './styles.css';
 
 function UserDetail() {
   const { userId } = useParams();
-  const [userDetail, setUserDetail] = useState(null);
-  const [noUser, setNoUser] = useState(false);
-
-  // fetch user details when the component mounts or when userId changes
-  useEffect(() => {
-    async function fetchUserDetail() {
-      if (!userId) {
-        setUserDetail(null);
-        return;
-      }
-
-      try {
-        const response = await api.get('/user/' + userId);
-        setUserDetail(response.data);
-        setNoUser(false);
-      } catch (error) {
-        console.error('Error fetching user detail:', error);
-        setNoUser(true);
-      }
+  
+  const { data: userDetail, isLoading, error } = useQuery({
+    queryKey: ['details', userId],
+    queryFn: async () => {
+      const response = await api.get('/user/' + userId);
+      return response.data;
     }
-    fetchUserDetail();
-  }, [userId]);
+  });
 
   return (
     <div className="userDetail-container">
-      {noUser ? (
+      {isLoading ? (
+        <Typography variant="h2" className="userDetail-title">
+           Loading user details...
+        </Typography>
+      ) : error ? (
         <Typography variant="h2" className="userDetail-title">User not found.</Typography>
       ) : (
         <>
