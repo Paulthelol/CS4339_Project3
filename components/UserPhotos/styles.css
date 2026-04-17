@@ -1,0 +1,35 @@
+img {
+    width: 50%;
+    height: auto;
+}
+
+.photo-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color:lightgrey;
+}
+
+.photo-item {
+    margin-bottom: 20px;
+}
+
+.comment {
+    margin-top: 0;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+.comment-header {
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #f0f0f0;
+}
+
+.comment-userLink {
+    text-decoration: underline;
+    color: inherit;
+    font-weight: bold;
+}

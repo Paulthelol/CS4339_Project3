@@ -1,0 +1,30 @@
+.UserListElement {
+    cursor: pointer;
+    user-select: none;
+    /* Standard syntax */
+    -webkit-user-select: none;
+    /* Chrome, Safari, newer Edge */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge Legacy */
+}
+
+.UserListElement:hover {
+    background-color: #f0f0f0;
+}
+
+.UserListElement--active {
+  background-color: #dbeafe;
+  border-left: 4px solid #2563eb;
+  font-weight: 600;
+}
+
+/* Apply same style for all link states */
+.UserListElement a:link,
+.UserListElement a:visited,
+.UserListElement a:hover,
+.UserListElement a:active {
+    text-decoration: none;
+    color: inherit;
+}
