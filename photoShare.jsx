@@ -12,6 +12,7 @@ import UserDetail from './components/UserDetail';
 import UserList from './components/UserList';
 import UserPhotos from './components/UserPhotos';
 import './lib/mockSetup';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 function Home() {
   return (
@@ -23,6 +24,8 @@ function Home() {
     </div>
   );
 }
+
+const queryClient = new QueryClient();
 
 function UserDetailRoute() {
   const { userId } = useParams();
@@ -51,7 +54,9 @@ function Root() {
         </Grid>
         <Grid item sm={9}>
           <Paper className="main-grid-item">
-            <Outlet />
+            <QueryClientProvider client={queryClient}>
+              <Outlet />
+            </QueryClientProvider>
           </Paper>
         </Grid>
       </Grid>
@@ -62,7 +67,6 @@ function Root() {
 function UserLayout() {
   return <Outlet />;
 }
-
 
 const router = createBrowserRouter([
   {
