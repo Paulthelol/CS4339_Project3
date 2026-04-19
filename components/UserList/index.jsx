@@ -9,31 +9,23 @@ import {
 import { Link, useParams } from 'react-router-dom';
 import './styles.css';
 import api from '../../lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 function UserList() {
-  const [userList, setUserList] = React.useState([]);
-  const [mounted, setMounted] = React.useState(false);
   const { userId } = useParams();
 
-  // fetch the list of users when the component mounts
-  useEffect(() => {
-    async function fetchUserList() {
-      try {
-        const response = await api.get('/user/list');
-        setUserList(response.data);
-      } catch (error) {
-        console.error('Error fetching user list:', error);
-      } finally {
-        setMounted(true);
-      }
+  const { data: userList, isLoading, error } = useQuery({
+    queryKey: ['userList'],
+    queryFn: async () => {
+      const response = await api.get('/user/list');
+      return response.data;
     }
-    fetchUserList();
-  }, []);
+  });
 
   return (
     <div>
       <List component="nav">
-        {!mounted ? (
+        {isLoading ? (
           <Typography variant="body1">Loading users...</Typography>
         ) : (
           {/* display the list of users, with a link to each user's detail page */ },
