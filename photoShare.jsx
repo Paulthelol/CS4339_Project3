@@ -44,12 +44,16 @@ function Root() {
     <div>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <TopBar />
+          <QueryClientProvider client={queryClient}>
+            <TopBar />
+          </QueryClientProvider>
         </Grid>
         <div className="main-topbar-buffer" />
         <Grid item sm={3}>
           <Paper className="main-grid-item">
-            <UserList />
+            <QueryClientProvider client={queryClient}>
+              <UserList />
+            </QueryClientProvider>
           </Paper>
         </Grid>
         <Grid item sm={9}>

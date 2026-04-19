@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AppBar, Toolbar, Typography } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 
 import './styles.css';
 import { Link, useParams, useMatch } from 'react-router-dom';
@@ -9,25 +10,14 @@ function TopBar() {
   const { userId } = useParams();
   const matchProfile = useMatch('/users/:userId');
   const matchPhotos = useMatch('/users/:userId/photos');
-  const [userInfo, setUserInfo] = useState(null);
 
-  // fetch user info when the component mounts or when userId changes
-  useEffect(() => {
-    async function fetchUserInfo() {
-      if (!userId) {
-        setUserInfo(null);
-        return;
-      }
-
-      try {
-        const response = await api.get(`/user/${userId}`);
-        setUserInfo(response.data);
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      }
+  const { data: userInfo, isLoading, error } = useQuery({
+    queryKey: ['details', userId],
+    queryFn: async () => {
+      const response = await api.get('/user/' + userId);
+      return response.data;
     }
-    fetchUserInfo();
-  }, [userId]);
+  });
 
   return (
     <AppBar className="topbar-appBar" position="absolute">
@@ -38,9 +28,15 @@ function TopBar() {
           </Typography>
         </Link>
         <div style={{ flexGrow: 1 }} />
+        {isLoading ? (
+          <Typography variant="body1">Loading...</Typography>
+        ) : error ? (
+          <Typography variant="body1">Error loading user info.</Typography>
+        ) : (
         <Typography>
           {userInfo == null ? `Home` : `${userInfo.first_name} ${userInfo.last_name}'s ${matchProfile ? 'Profile' : matchPhotos ? 'Photos' : 'Page'}`}
         </Typography>
+        )}
       </Toolbar>
     </AppBar>
   );
