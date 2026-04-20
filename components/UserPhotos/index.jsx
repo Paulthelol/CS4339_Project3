@@ -9,8 +9,22 @@ import './styles.css';
 function UserPhotos() {
   const { userId } = useParams();
 
+  const {
+    data: sessionUser,
+    isLoading: isAuthLoading,
+    isError: authError,
+  } = useQuery({
+    queryKey: ['admin-me'],
+    retry: false,
+    queryFn: async () => {
+      const response = await api.get('/admin/me');
+      return response.data;
+    },
+  });
+
   const { data: userInfo, isLoading, error } = useQuery({
     queryKey: ['userInfo', userId],
+    enabled: Boolean(userId) && Boolean(sessionUser),
     queryFn: async () => {
       const response = await api.get('/user/' + userId);
       return response.data;
@@ -19,6 +33,7 @@ function UserPhotos() {
 
   const { data: photos, isLoading: photosLoading, error: photosError } = useQuery({
     queryKey: ['userPhotos', userId],
+    enabled: Boolean(userId) && Boolean(sessionUser),
     queryFn: async () => {
       const response = await api.get('/photosOfUser/' + userId);
       return response.data;
@@ -27,6 +42,14 @@ function UserPhotos() {
 
   return (
     <div>
+      {isAuthLoading && (
+        <Typography variant="body1">Checking session...</Typography>
+      )}
+      {authError && (
+        <Typography variant="body1">Please log in to view photos.</Typography>
+      )}
+      {!isAuthLoading && !authError && (
+      <>
       {photosLoading && photos?.length === 0 && (
         <Typography variant="body1">No photos found for this user.</Typography>
       )}
@@ -63,6 +86,8 @@ function UserPhotos() {
           </div>
         )))}
       </div>
+      </>
+      )}
     </div>
   );
 }
