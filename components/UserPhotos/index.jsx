@@ -46,6 +46,13 @@ function UserPhotos() {
 
   function handleAddComment(photoId, comment) {
     mutation.mutate({ photoId, comment });
+    setCommentText({ ...commentText, [photoId]: '' });
+  }
+
+  function handleKeyDown(e, photoId, comment) {
+    if (e.key === 'Enter') {
+      handleAddComment(photoId, comment);
+    }
   }
 
   return (
@@ -55,7 +62,7 @@ function UserPhotos() {
       )}
       <div>
         {/* display photos in a list */}
-        {(photosLoading && isLoading) ? (
+        {isLoading ? (
           <Typography variant="body1">Loading photos...</Typography>
         ) : (
           photos?.map((photo) => (
@@ -82,11 +89,13 @@ function UserPhotos() {
                 <Divider />
               </div> 
             ))}
+
+            {/* Comment Box */}
             <div className='commentBox'>
-              <input type="text" value={commentText[photo._id] || ''} onChange={(e) => setCommentText({ ...commentText, [photo._id]: e.target.value })} placeholder="Add a comment..." className="commentInput" />
-                <button onClick={() => handleAddComment(photo._id, commentText[photo._id])}>Add Comment</button>
-              </div>
+              <input onKeyDown={(e) => handleKeyDown(e, photo._id, commentText[photo._id])} type="text" value={commentText[photo._id] || ''} onChange={(e) => setCommentText({ ...commentText, [photo._id]: e.target.value })} placeholder="Add a comment..." className="commentInput" />
+              <button onClick={() => handleAddComment(photo._id, commentText[photo._id])} className='commentButton'>Add Comment</button>
             </div>
+          </div>
         )))}
       </div>
     </div>
