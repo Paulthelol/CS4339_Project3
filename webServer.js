@@ -19,7 +19,7 @@ app.use(session({
 
 // define these in env and import in this file
 const port = process.env.PORT || 3001;
-const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1/project2';
+const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1/project3';
 const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:3000';
 
 
