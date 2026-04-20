@@ -33,7 +33,7 @@ function UserPhotos() {
   // Add comment
   const mutation = useMutation({
     mutationFn: async ({photoId, comment}) => {
-      const response = await api.post('/addComment/' + photoId, { comment });
+      const response = await api.post('/commentsOfPhoto/' + photoId, { comment });
       return response.data;
     },
     onSuccess: () => {

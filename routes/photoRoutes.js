@@ -5,6 +5,6 @@ import isAuthenticated from "../middleware/auth.js";
 const router = express.Router();
 
 router.get("/photosOfUser/:id", isAuthenticated, getPhotosOfUser);
-router.post("/addComment/:id", isAuthenticated, addComment);
+router.post("/commentsOfPhoto/:id", isAuthenticated, addComment);
 
 export default router;
