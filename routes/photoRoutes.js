@@ -1,6 +1,6 @@
 import express from 'express';
-import { getPhotosOfUser } from '../controllers/photoController.js';
-import { isAuthenticated } from '../middleware/auth.js';
+import getPhotosOfUser from '../controllers/photoController.js';
+import isAuthenticated from '../middleware/auth.js';
 
 const router = express.Router();
 

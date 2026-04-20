@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../../lib/api';
-import './styles.css';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import api from '../../lib/api';
+import './styles.css';
 
 function LoginRegister() {
     const navigate = useNavigate();
@@ -147,7 +147,9 @@ function LoginRegister() {
                 <button type="button" className="main-auth-toggle" onClick={() => {
                     usingLogin[1](false);
                     usingRegister[1](true);
-                }}>Register</button>
+                }}>
+                    Register
+                </button>
             </div>
             )}
 
@@ -222,7 +224,9 @@ function LoginRegister() {
                 <button type="button" className="main-auth-toggle" onClick={() => {
                     usingRegister[1](false);
                     usingLogin[1](true);
-                }}>Back to Login</button>
+                }}>
+                    Back to Login
+                </button>
             </div>
             )}
         </div>

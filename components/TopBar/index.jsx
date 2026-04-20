@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-
-import './styles.css';
 import { Link, useParams, useMatch } from 'react-router-dom';
+
 import api from '../../lib/api';
+import './styles.css';
 
 function TopBar() {
   const { userId } = useParams();

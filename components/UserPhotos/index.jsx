@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Typography, Divider } from '@mui/material';
-import { useParams, Link } from 'react-router-dom';
-import api from '../../lib/api';
 import { useQuery } from '@tanstack/react-query';
+import { useParams, Link } from 'react-router-dom';
 
+import api from '../../lib/api';
 import './styles.css';
 
 function UserPhotos() {
@@ -22,7 +22,7 @@ function UserPhotos() {
     },
   });
 
-  const { data: userInfo, isLoading, error } = useQuery({
+  const { data: userInfo, isLoading } = useQuery({
     queryKey: ['userInfo', userId],
     enabled: Boolean(userId) && Boolean(sessionUser),
     queryFn: async () => {
@@ -31,7 +31,7 @@ function UserPhotos() {
     }
   });
 
-  const { data: photos, isLoading: photosLoading, error: photosError } = useQuery({
+  const { data: photos, isLoading: photosLoading } = useQuery({
     queryKey: ['userPhotos', userId],
     enabled: Boolean(userId) && Boolean(sessionUser),
     queryFn: async () => {
@@ -63,7 +63,7 @@ function UserPhotos() {
               <div className='photo-header'>
                 <Typography variant="h6">{userInfo.first_name + ' ' + userInfo.last_name}</Typography>
                 <Typography variant="body1">{new Date(photo.date_time).toLocaleString()}</Typography>
-            </div>
+              </div>
             <img src={`/images/` + photo.file_name} alt={photo.file_name} className="photo-image" />
             <Typography variant="body1" className='comment-header'>Comments:</Typography>
             <Divider />
@@ -83,7 +83,7 @@ function UserPhotos() {
               </div>
 
             ))}
-          </div>
+            </div>
         )))}
       </div>
       </>

@@ -7,13 +7,6 @@ import {
 } from 'react-router-dom';
 
 import './styles/main.css';
-import TopBar from './components/TopBar';
-import UserDetail from './components/UserDetail';
-import UserList from './components/UserList';
-import UserPhotos from './components/UserPhotos';
-import LoginRegister from './components/LoginRegister';
-import api from './lib/api';
-import './lib/mockSetup';
 import {
   QueryClient,
   QueryClientProvider,
@@ -21,6 +14,13 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import api from './lib/api';
+import './lib/mockSetup';
+import TopBar from './components/TopBar';
+import UserDetail from './components/UserDetail';
+import UserList from './components/UserList';
+import UserPhotos from './components/UserPhotos';
+import LoginRegister from './components/LoginRegister';
 
 function Home() {
   return (

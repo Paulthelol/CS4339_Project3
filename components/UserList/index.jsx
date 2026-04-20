@@ -8,8 +8,8 @@ import {
 } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
 import './styles.css';
-import api from '../../lib/api';
 import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/api';
 
 function UserList() {
   const { userId } = useParams();

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
 
-export function isValidObjectId(id) {
+export default function isValidObjectId(id) {
   return mongoose.Types.ObjectId.isValid(id);
 }

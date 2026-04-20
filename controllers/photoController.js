@@ -1,8 +1,8 @@
 import User from '../schema/user.js';
 import Photo from '../schema/photo.js';
-import { isValidObjectId } from '../utils/validation.js';
+import isValidObjectId from '../utils/validation.js';
 
-export async function getPhotosOfUser(req, res) {
+export default async function getPhotosOfUser(req, res) {
   try {
     const userId = req.params.id;
 

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Button, Typography } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
-import api from '../../lib/api';
 import { useQuery } from '@tanstack/react-query';
 
+import api from '../../lib/api';
 import './styles.css';
 
 function UserDetail() {

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import User from '../schema/user.js';
-import { isValidObjectId } from '../utils/validation.js';
+import isValidObjectId from '../utils/validation.js';
 
 export async function login(req, res) {
   try {
