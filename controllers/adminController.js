@@ -29,6 +29,7 @@ export function logout(req, res) {
     if (err) {
       return res.status(400).send('Logout failed');
     }
+    res.clearCookie('connect.sid');
     return res.json({ message: 'Logout successful' });
   });
 }
