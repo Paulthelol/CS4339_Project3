@@ -1,7 +1,7 @@
+import mongoose from "mongoose";
 import User from "../schema/user.js";
 import Photo from "../schema/photo.js";
 import isValidObjectId from "../utils/validation.js";
-import mongoose from "mongoose";
 
 export async function getPhotosOfUser(req, res) {
   try {

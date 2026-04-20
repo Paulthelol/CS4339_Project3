@@ -1,8 +1,8 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState } from 'react';
 import { Typography, Divider } from '@mui/material';
 import { useParams, Link } from 'react-router-dom';
-import api from '../../lib/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../lib/api';
 
 import './styles.css';
 
@@ -13,7 +13,7 @@ function UserPhotos() {
   const queryClient = useQueryClient();
 
   // Load info of the user
-  const { data: userInfo, isLoading, error } = useQuery({
+  const { data: userInfo, isLoading, error: userInfoError } = useQuery({
     queryKey: ['userInfo', userId],
     queryFn: async () => {
       const response = await api.get('/user/' + userId);
@@ -64,16 +64,18 @@ function UserPhotos() {
         {/* display photos in a list */}
         {isLoading ? (
           <Typography variant="body1">Loading photos...</Typography>
+        ) : (userInfoError || photosError) ? (
+          <Typography variant="body1">Error loading photos.</Typography>
         ) : (
           photos?.map((photo) => (
             <div key={photo._id} className="photo-item">
               <div className='photo-header'>
                 <Typography variant="h6">{userInfo.first_name + ' ' + userInfo.last_name}</Typography>
                 <Typography variant="body1">{new Date(photo.date_time).toLocaleString()}</Typography>
-            </div>
-            <img src={`/images/` + photo.file_name} alt={photo.file_name} className="photo-image" />
-            <Typography variant="body1" className='comment-header'>Comments:</Typography>
-            <Divider />
+              </div>
+              <img src={`/images/` + photo.file_name} alt={photo.file_name} className="photo-image" />
+              <Typography variant="body1" className='comment-header'>Comments:</Typography>
+            <div />
             {!photo.comments && <Typography variant="body1" className="comment">No comments found for this photo.</Typography>}
 
             {/* display comments for the photo */}
@@ -95,8 +97,9 @@ function UserPhotos() {
               <input onKeyDown={(e) => handleKeyDown(e, photo._id, commentText[photo._id])} type="text" value={commentText[photo._id] || ''} onChange={(e) => setCommentText({ ...commentText, [photo._id]: e.target.value })} placeholder="Add a comment..." className="commentInput" />
               <button onClick={() => handleAddComment(photo._id, commentText[photo._id])} className='commentButton'>Add Comment</button>
             </div>
-          </div>
-        )))}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
