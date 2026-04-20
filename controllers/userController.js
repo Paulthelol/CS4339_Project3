@@ -37,7 +37,7 @@ export async function createUser(req, res) {
     };
 
     await User.create(newUser);
-    return res.status(201).json({
+    return res.status(200).json({
       _id: newUser._id,
       first_name,
       last_name,
