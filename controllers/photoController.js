@@ -1,18 +1,19 @@
-import User from '../schema/user.js';
-import Photo from '../schema/photo.js';
-import isValidObjectId from '../utils/validation.js';
+import mongoose from "mongoose";
+import User from "../schema/user.js";
+import Photo from "../schema/photo.js";
+import isValidObjectId from "../utils/validation.js";
 
-export default async function getPhotosOfUser(req, res) {
+export async function getPhotosOfUser(req, res) {
   try {
     const userId = req.params.id;
 
     if (!isValidObjectId(userId)) {
-      return res.status(400).send('Invalid user id');
+      return res.status(400).send("Invalid user id");
     }
 
-    const users = await User.find({}, '_id first_name last_name').lean();
+    const users = await User.find({}, "_id first_name last_name").lean();
     if (!users) {
-      return res.status(404).send('No users found');
+      return res.status(404).send("No users found");
     }
 
     const photos = await Photo.find({ user_id: userId }).lean();
@@ -43,6 +44,49 @@ export default async function getPhotosOfUser(req, res) {
     }));
 
     return res.json(responsePhotos);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
+
+export async function addComment(req, res) {
+  try {
+    // Data definition:
+    const userId = req.session.user;
+    const photoId = req.params.id;
+    const { comment } = req.body;
+
+    // Inital sanitization
+    if (userId === undefined || userId === null) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    if (photoId === undefined || photoId === null) {
+      return res.status(404).send("Not Found");
+    }
+
+    if (comment === undefined || comment === null) {
+      return res.status(400).send("Bad Request");
+    }
+
+    // Fetch the image to comment on
+    const photo = await Photo.findById(photoId);
+    if (!photo) {
+      return res.status(404).send("Photo not found");
+    }
+
+    // Add the comment to the photo
+    const newComment = {
+      _id: new mongoose.Types.ObjectId(),
+      comment,
+      date_time: new Date(),
+      user_id: userId,
+    };
+
+    photo.comments = photo.comments || [];
+    photo.comments.push(newComment);
+    await photo.save();
+    return res.status(200).json(newComment);
   } catch (err) {
     return res.status(500).send(err.message);
   }
