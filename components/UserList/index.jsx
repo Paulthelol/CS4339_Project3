@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import {
   Divider,
   List,
@@ -8,14 +8,28 @@ import {
 } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
 import './styles.css';
-import api from '../../lib/api';
 import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/api';
 
 function UserList() {
   const { userId } = useParams();
 
-  const { data: userList, isLoading, error } = useQuery({
+  const {
+    data: sessionUser,
+    isLoading: isAuthLoading,
+    isError: authError,
+  } = useQuery({
+    queryKey: ['admin-me'],
+    retry: false,
+    queryFn: async () => {
+      const response = await api.get('/admin/me');
+      return response.data;
+    },
+  });
+
+  const { data: userList = [], isLoading, error } = useQuery({
     queryKey: ['userList'],
+    enabled: Boolean(sessionUser),
     queryFn: async () => {
       const response = await api.get('/user/list');
       return response.data;
@@ -25,23 +39,32 @@ function UserList() {
   return (
     <div>
       <List component="nav">
-        {isLoading ? (
+        {isAuthLoading ? (
+          <Typography variant="body1">Checking session...</Typography>
+        ) : authError ? (
+          <Typography variant="body1">Please log in to view users.</Typography>
+        ) : isLoading ? (
           <Typography variant="body1">Loading users...</Typography>
+        ) : error ? (
+          <Typography variant="body1">Error loading users.</Typography>
         ) : (
-          {/* display the list of users, with a link to each user's detail page */ },
-          userList.map((user) => (
-            <Fragment key={user._id}>
-              <Divider />
-              <div className={user._id === userId ? 'UserListElement--active' : 'UserListElement'}>
-                <Link to={`/users/${user._id}`} >
-                  <ListItem>
-                    <ListItemText primary={user.first_name + ' ' + user.last_name} />
-                  </ListItem>
-                </Link>
-              </div>
-              <Divider />
-            </Fragment>
-          ))
+          !Array.isArray(userList) || userList.length === 0 ? (
+            <Typography variant="body1">No users found.</Typography>
+          ) : (
+            userList.map((user) => (
+              <Fragment key={user._id}>
+                <Divider />
+                <div className={user._id === userId ? 'UserListElement--active' : 'UserListElement'}>
+                  <Link to={`/users/${user._id}`} >
+                    <ListItem>
+                      <ListItemText primary={user.first_name + ' ' + user.last_name} />
+                    </ListItem>
+                  </Link>
+                </div>
+                <Divider />
+              </Fragment>
+            ))
+          )
         )}
       </List>
     </div>

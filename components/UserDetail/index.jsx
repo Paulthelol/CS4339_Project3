@@ -1,17 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Button, Typography } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
-import api from '../../lib/api';
 import { useQuery } from '@tanstack/react-query';
 
+import api from '../../lib/api';
 import './styles.css';
 
 function UserDetail() {
   const { userId } = useParams();
+
+  const {
+    data: sessionUser,
+    isLoading: isAuthLoading,
+    isError: authError,
+  } = useQuery({
+    queryKey: ['admin-me'],
+    retry: false,
+    queryFn: async () => {
+      const response = await api.get('/admin/me');
+      return response.data;
+    },
+  });
   
   const { data: userDetail, isLoading, error } = useQuery({
     queryKey: ['details', userId],
+    enabled: Boolean(userId) && Boolean(sessionUser),
     queryFn: async () => {
       const response = await api.get('/user/' + userId);
       return response.data;
@@ -20,7 +34,13 @@ function UserDetail() {
 
   return (
     <div className="userDetail-container">
-      {isLoading ? (
+      {isAuthLoading ? (
+        <Typography variant="h2" className="userDetail-title">
+           Checking session...
+        </Typography>
+      ) : authError ? (
+        <Typography variant="h2" className="userDetail-title">Please log in.</Typography>
+      ) : isLoading ? (
         <Typography variant="h2" className="userDetail-title">
            Loading user details...
         </Typography>
