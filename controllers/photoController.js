@@ -41,7 +41,7 @@ export async function getPhotosOfUser(req, res) {
         date_time: comment.date_time,
         user: userMap[comment.user_id?.toString()] || null,
       })),
-      likes: photo.likes.length || 0,
+      likes: photo.likes
     }));
 
     return res.json(responsePhotos);
