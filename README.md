@@ -2,7 +2,6 @@
 
 ## Prerequisites
 - Node.js LTS (>= 18), npm (>= 9)
-- MongoDB on `127.0.0.1`
 
 ## Overview
 - TanStack Query for server state (`useQuery` / `useMutation`)
@@ -11,14 +10,20 @@
 - Git/GitHub workflow per course spec (feature branches, PRs)
 
 ## Setup
+
+# Frontend
 ```bash
+cd Frontend
 npm install
-cd test && npm install && cd ..
 ```
+Be sure to create a `.env` file in `Frontend` with your Cloudinary credentials (see `.env.example`).
 
-Copy your working Project 2 app into this tree if you are merging starter files from the course zip.
-
-**Database name:** `mongodb://127.0.0.1/project3` in `webServer.js` and `loadDatabase.js`.
+# Backend
+```bash
+cd Backend
+npm install
+```
+Be sure to create a `.env` file in `Backend` with your MongoDB URI (see `.env.example`).
 
 ```bash
 node loadDatabase.js
@@ -29,9 +34,17 @@ node loadDatabase.js
 
 ## Run
 ```bash
+cd Backend
 npm run server   # Express, port 3001
+```
+And in another terminal:
+```bash
+cd Frontend
 npm run client   # Vite, port 3000
-# or
+```
+
+or in one terminal:
+```bash
 npm run dev
 ```
 
