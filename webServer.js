@@ -5,6 +5,7 @@ import session from "express-session";
 import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import photoRoutes from "./routes/photoRoutes.js";
+import "dotenv/config";
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(
 
 // define these in env and import in this file
 const port = process.env.PORT || 3001;
-const mongoUrl = process.env.MONGO_URL || "mongodb://127.0.0.1/project3";
+const mongoUrl = process.env.MONGODB_URI || process.env.MONGO_URL;
 const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:3000";
 
 // Enable CORS for frontend running on a different port

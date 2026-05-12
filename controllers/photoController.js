@@ -91,3 +91,31 @@ export async function addComment(req, res) {
     return res.status(500).send(err.message);
   }
 }
+
+export async function uploadPhoto(req, res) {
+  try{
+    const userId = req.session.user;
+    const { url } = req.body;
+    if (userId === undefined || userId === null) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    if (url === undefined || url === null) {
+      return res.status(400).send("Bad Request");
+    }
+
+    const newPhoto = {
+      _id: new mongoose.Types.ObjectId(),
+      user_id: userId,
+      file_name: url,
+      date_time: new Date(),
+      comments: [],
+    };
+
+    await Photo.create(newPhoto);
+    return res.status(200).json(newPhoto);
+
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
