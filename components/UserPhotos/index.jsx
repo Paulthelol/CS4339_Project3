@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Typography, Divider } from '@mui/material';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../../lib/api';
 
 // Thumbs Up for like button
 import { FaThumbsUp } from 'react-icons/fa';
+
+import api from '../../lib/api';
 
 import './styles.css';
 

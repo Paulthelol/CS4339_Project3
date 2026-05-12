@@ -152,7 +152,7 @@ export async function likePhoto(req, res) {
     }
 
     await photo.save();
-    return res.status(200).json({ likes: photo.likes.length });
+    return res.status(200).json( photo );
   } catch (err) {
     return res.status(500).send(err.message);
   }
