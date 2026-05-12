@@ -73,7 +73,7 @@ function UserPhotos() {
                 <Typography variant="h6">{userInfo.first_name + ' ' + userInfo.last_name}</Typography>
                 <Typography variant="body1">{new Date(photo.date_time).toLocaleString()}</Typography>
               </div>
-              <img src={`/images/` + photo.file_name} alt={photo.file_name} className="photo-image" />
+              <img src={ photo.file_name} alt={photo.file_name} className="photo-image" />
               <Typography variant="body1" className='comment-header'>Comments:</Typography>
             <div />
             {!photo.comments && <Typography variant="body1" className="comment">No comments found for this photo.</Typography>}
