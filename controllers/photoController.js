@@ -125,7 +125,7 @@ export async function uploadPhoto(req, res) {
 export async function likePhoto(req, res) {
   try {
     const userId = req.session.user;
-    const photoId = req.params.id;
+    const photoId = req.params.photoId;
 
     if (userId === undefined || userId === null) {
       return res.status(401).send("Unauthorized");

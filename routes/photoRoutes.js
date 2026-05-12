@@ -7,6 +7,6 @@ const router = express.Router();
 router.get("/photosOfUser/:id", isAuthenticated, getPhotosOfUser);
 router.post("/commentsOfPhoto/:id", isAuthenticated, addComment);
 router.post("/photos", isAuthenticated, uploadPhoto);
-router.post("/photos/:id/like", isAuthenticated, likePhoto);
+router.post("/photos/:photoId/like", isAuthenticated, likePhoto);
 
 export default router;
