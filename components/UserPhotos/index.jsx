@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Typography, Divider } from '@mui/material';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+// Thumbs Up for like button
+import { FaThumbsUp } from 'react-icons/fa';
+
 import api from '../../lib/api';
 
 import './styles.css';
@@ -49,6 +53,30 @@ function UserPhotos() {
     setCommentText({ ...commentText, [photoId]: '' });
   }
 
+  // Gets the user's id to check for likes
+  const { data: currentUser } = useQuery({
+  queryKey: ['admin-me'],
+  retry: false,
+  queryFn: async () => {
+    const response = await api.get('/admin/me');
+    return response.data;
+  },
+});
+
+  // Like photo
+  const likeMutation = useMutation({
+    mutationFn: async (photoId) => {
+      const response = await api.post(`/photos/${photoId}/like`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userPhotos', userId] });
+    },
+    onError: (error) => {
+      console.error('Error liking photo:', error);
+    }
+  });
+
   function handleKeyDown(e, photoId, comment) {
     if (e.key === 'Enter') {
       handleAddComment(photoId, comment);
@@ -74,6 +102,12 @@ function UserPhotos() {
                 <Typography variant="body1">{new Date(photo.date_time).toLocaleString()}</Typography>
               </div>
               <img src={ photo.file_name} alt={photo.file_name} className="photo-image" />
+              <div className='photo-likes'>
+                <Typography variant="body1">{photo.likes.length} {photo.likes.length === 1 ? 'like' : 'likes'}</Typography>
+                <button className='likeButton' onClick={() => likeMutation.mutate(photo._id)}>
+                  <FaThumbsUp className={photo.likes.includes(currentUser._id) ? 'liked' : 'unliked'}/>
+                </button>
+              </div>
               <Typography variant="body1" className='comment-header'>Comments:</Typography>
             <div />
             {!photo.comments && <Typography variant="body1" className="comment">No comments found for this photo.</Typography>}

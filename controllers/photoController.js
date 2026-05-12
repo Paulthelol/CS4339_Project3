@@ -41,6 +41,7 @@ export async function getPhotosOfUser(req, res) {
         date_time: comment.date_time,
         user: userMap[comment.user_id?.toString()] || null,
       })),
+      likes: photo.likes
     }));
 
     return res.json(responsePhotos);
@@ -110,11 +111,48 @@ export async function uploadPhoto(req, res) {
       file_name: url,
       date_time: new Date(),
       comments: [],
+      likes: [],
     };
 
     await Photo.create(newPhoto);
     return res.status(200).json(newPhoto);
 
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
+
+export async function likePhoto(req, res) {
+  try {
+    const userId = req.session.user;
+    const photoId = req.params.photoId;
+
+    if (userId === undefined || userId === null) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    if (photoId === undefined || photoId === null) {
+      return res.status(404).send("Not Found");
+    }
+
+    const photo = await Photo.findById(photoId);
+
+    if (!photo) {
+      return res.status(404).send("Photo not found");
+    }
+
+    if (!photo.likes) {
+      photo.likes = [];
+    }
+
+    if (photo.likes.includes(userId)) {
+      photo.likes = photo.likes.filter((id) => id.toString() !== userId.toString());
+    } else {
+      photo.likes.push(userId);
+    }
+
+    await photo.save();
+    return res.status(200).json( photo );
   } catch (err) {
     return res.status(500).send(err.message);
   }

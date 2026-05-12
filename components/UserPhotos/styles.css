@@ -62,3 +62,25 @@ img {
 
     margin-left: 5px;
 }
+
+.photo-likes {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.likeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.likeButton .liked {
+    color: #007bff;
+}
+
+.likeButton .unliked {
+    color: #ccc;
+}
