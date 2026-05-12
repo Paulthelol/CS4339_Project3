@@ -21,6 +21,9 @@ import User from "./schema/user.js";
 import Photo from "./schema/photo.js";
 import SchemaInfo from "./schema/schemaInfo.js";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 /** Bcrypt digest for seeded accounts; bcrypt.compare("weak", ...) is true. */
 const SEEDED_PASSWORD_DIGEST =
   "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi";
@@ -44,7 +47,7 @@ const cloudinaryUrls = {
 mongoose.Promise = bluebird;
 mongoose.set("strictQuery", false);
 const mongoUri =
-  process.env.MONGODB_URI || process.env.MONGO_URL || "mongodb://127.0.0.1/project4";
+  process.env.MONGODB_URI || process.env.MONGO_URL;
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

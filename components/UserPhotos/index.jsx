@@ -74,6 +74,7 @@ function UserPhotos() {
                 <Typography variant="body1">{new Date(photo.date_time).toLocaleString()}</Typography>
               </div>
               <img src={ photo.file_name} alt={photo.file_name} className="photo-image" />
+              <Typography variant="body1">{photo.likes} {photo.likes === 1 ? 'like' : 'likes'}</Typography>
               <Typography variant="body1" className='comment-header'>Comments:</Typography>
             <div />
             {!photo.comments && <Typography variant="body1" className="comment">No comments found for this photo.</Typography>}
