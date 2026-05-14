@@ -30,7 +30,7 @@ const userDetailProperties = [
   "occupation",
 ];
 // Valid properties of the photo model
-const photoProperties = ["file_name", "date_time", "user_id", "_id", "comments"];
+const photoProperties = ["file_name", "date_time", "user_id", "_id", "comments", "likes"];
 // Valid comments properties
 const commentProperties = ["comment", "date_time", "_id", "user"];
 
@@ -52,7 +52,7 @@ describe("Photo App: Server API Tests", function () {
 
   describe("test using model data", function () {
     it("webServer does not import model data", function (done) {
-      fs.readFile("../webServer.js", function (err, data) {
+      fs.readFile("../Backend/webServer.js", function (err, data) {
         if (err) throw err;
         const src = data.toString();
         assert(
