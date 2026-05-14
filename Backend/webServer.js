@@ -11,6 +11,14 @@ const app = express();
 
 app.use(express.json());
 
+app.get("/health", (req, res) => {
+  if (mongoose.connection.readyState === 1) {
+    return res.status(200).send("ok");
+  }
+
+  return res.status(503).send("database not ready");
+});
+
 app.use(
   session({
     secret: "none",
