@@ -60,6 +60,10 @@ jobs:
           done
           echo "Backend failed to start"
           exit 1
+
+      - name: Install test dependencies
+        working-directory: test
+        run: npm install
     
       - name: Run tests
         working-directory: test
