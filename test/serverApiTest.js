@@ -49,6 +49,7 @@ function removeMongoProperties(model) {
 
 describe("Photo App: Server API Tests", function () {
   let authCookie; // Session cookie from login request
+  let sessionUser;
 
   describe("test using model data", function () {
     it("webServer does not import model data", function (done) {
@@ -83,7 +84,10 @@ describe("Photo App: Server API Tests", function () {
       };
 
       const request = http.request(options, function (response) {
-        response.on("data", function () {});
+        let responseBody = "";
+        response.on("data", function (chunk) {
+          responseBody += chunk;
+        });
 
         response.on("end", function () {
           assert.strictEqual(
@@ -91,11 +95,15 @@ describe("Photo App: Server API Tests", function () {
             200,
             "HTTP response status code not OK"
           );
+          sessionUser = JSON.parse(responseBody);
           // If express-session middleware was enabled we should have a
           // 'set-cookie' response header with the Express session cookie. We
           // assume it will be the first (and only) cookie.
-          authCookie =
-            response.headers["set-cookie"] && response.headers["set-cookie"][0];
+          authCookie = response.headers["set-cookie"] && response.headers["set-cookie"][0];
+          // Keep only the cookie name=value pair (strip attributes like Path, HttpOnly)
+          if (authCookie && authCookie.includes(';')) {
+            authCookie = authCookie.split(';')[0];
+          }
           done();
         });
       });
@@ -496,6 +504,246 @@ describe("Photo App: Server API Tests", function () {
       ).on("error", function (err) {
         done(err);
       });
+    });
+  });
+
+  describe("test /photos", function () {
+    const uploadedPhotoUrl = `https://example.com/upload-${Date.now()}.jpg`;
+
+    it("can save a photo URL with /photos", function (done) {
+      const postBody = JSON.stringify({ url: uploadedPhotoUrl });
+
+      const options = {
+        hostname: host,
+        port,
+        path: "/photos",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": postBody.length,
+          Cookie: authCookie,
+        },
+      };
+
+      const request = http.request(options, function (response) {
+        let responseBody = "";
+        response.on("data", function (chunk) {
+          responseBody += chunk;
+        });
+
+        response.on("end", function () {
+          assert.strictEqual(response.statusCode, 200);
+          const uploadedPhoto = JSON.parse(responseBody);
+          assert.strictEqual(uploadedPhoto.file_name, uploadedPhotoUrl);
+          assert.strictEqual(uploadedPhoto.user_id.toString(), sessionUser._id);
+          done();
+        });
+      });
+
+      request.write(postBody);
+      request.end();
+    });
+
+    it("persists the uploaded photo URL for the logged-in user", function (done) {
+      http.get(
+        {
+          hostname: host,
+          port,
+          path: `/photosOfUser/${sessionUser._id}`,
+          headers: { Cookie: authCookie },
+        },
+        function (response) {
+          let responseBody = "";
+          response.on("data", function (chunk) {
+            responseBody += chunk;
+          });
+
+          response.on("end", function () {
+            assert.strictEqual(response.statusCode, 200);
+            const photos = JSON.parse(responseBody);
+            const uploadedPhoto = _.find(photos, {
+              file_name: uploadedPhotoUrl,
+            });
+            assert(uploadedPhoto, "expected to find the uploaded photo URL");
+            assert.strictEqual(uploadedPhoto.user_id.toString(), sessionUser._id);
+            done();
+          });
+        }
+      ).on("error", function (err) {
+        done(err);
+      });
+    });
+
+    it("returns 400 when /photos is missing a url", function (done) {
+      const postBody = JSON.stringify({});
+
+      const options = {
+        hostname: host,
+        port,
+        path: "/photos",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": postBody.length,
+          Cookie: authCookie,
+        },
+      };
+
+      const request = http.request(options, function (response) {
+        response.on("data", function () {});
+        response.on("end", function () {
+          assert.strictEqual(response.statusCode, 400);
+          done();
+        });
+      });
+
+      request.write(postBody);
+      request.end();
+    });
+
+    it("returns 401 when /photos is unauthenticated", function (done) {
+      const postBody = JSON.stringify({ url: uploadedPhotoUrl });
+
+      const options = {
+        hostname: host,
+        port,
+        path: "/photos",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": postBody.length,
+        },
+      };
+
+      const request = http.request(options, function (response) {
+        response.on("data", function () {});
+        response.on("end", function () {
+          assert.strictEqual(response.statusCode, 401);
+          done();
+        });
+      });
+
+      request.write(postBody);
+      request.end();
+    });
+  });
+
+  describe("test /photos/:photoId/like", function () {
+    let seedPhoto;
+    let likedPhotoPath;
+
+    before(function (done) {
+      // Fetch the real photos for the logged-in session user from the API
+      // so we operate on DB document ids rather than modelData ids which
+      // are not persisted in MongoDB with the same _id values.
+      const options = {
+        hostname: host,
+        port,
+        path: `/photosOfUser/${sessionUser._id}`,
+        method: 'GET',
+        headers: { Cookie: authCookie },
+      };
+
+      const req = http.request(options, function (res) {
+        let body = '';
+        res.on('data', (chunk) => { body += chunk; });
+        res.on('end', () => {
+          if (res.statusCode !== 200) return done(new Error('Failed to fetch photosOfUser: ' + res.statusCode));
+          const photos = JSON.parse(body);
+          if (!Array.isArray(photos) || photos.length === 0) return done(new Error('No photos found for session user'));
+          seedPhoto = photos[0];
+          likedPhotoPath = `/photos/${seedPhoto._id}/like`;
+          done();
+        });
+      });
+
+      req.on('error', done);
+      req.end();
+    });
+
+    it("adds a like to the photo", function (done) {
+      const request = http.request(
+        {
+          hostname: host,
+          port,
+          path: likedPhotoPath,
+          method: "POST",
+          headers: { Cookie: authCookie },
+        },
+        function (response) {
+          let responseBody = "";
+          response.on("data", function (chunk) {
+            responseBody += chunk;
+          });
+
+          response.on("end", function () {
+            assert.strictEqual(response.statusCode, 200);
+            const likedPhoto = JSON.parse(responseBody);
+            assert(
+              likedPhoto.likes.some(
+                (id) => id.toString() === sessionUser._id.toString()
+              ),
+              "expected the logged-in user to be present in likes"
+            );
+            done();
+          });
+        }
+      );
+
+      request.end();
+    });
+
+    it("removes the like on a second request from the same user", function (done) {
+      const request = http.request(
+        {
+          hostname: host,
+          port,
+          path: likedPhotoPath,
+          method: "POST",
+          headers: { Cookie: authCookie },
+        },
+        function (response) {
+          let responseBody = "";
+          response.on("data", function (chunk) {
+            responseBody += chunk;
+          });
+
+          response.on("end", function () {
+            assert.strictEqual(response.statusCode, 200);
+            const unlikedPhoto = JSON.parse(responseBody);
+            assert.strictEqual(
+              unlikedPhoto.likes.filter(
+                (id) => id.toString() === sessionUser._id.toString()
+              ).length,
+              0,
+              "expected the logged-in user to be removed from likes"
+            );
+            done();
+          });
+        }
+      );
+
+      request.end();
+    });
+
+    it("returns 401 when liking a photo without authentication", function (done) {
+      const request = http.request(
+        {
+          hostname: host,
+          port,
+          path: likedPhotoPath,
+          method: "POST",
+        },
+        function (response) {
+          response.on("data", function () {});
+          response.on("end", function () {
+            assert.strictEqual(response.statusCode, 401);
+            done();
+          });
+        }
+      );
+
+      request.end();
     });
   });
 });

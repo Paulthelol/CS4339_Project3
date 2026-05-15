@@ -145,7 +145,9 @@ export async function likePhoto(req, res) {
       photo.likes = [];
     }
 
-    if (photo.likes.includes(userId)) {
+    const hasLiked = photo.likes.some((id) => id.toString() === userId.toString());
+
+    if (hasLiked) {
       photo.likes = photo.likes.filter((id) => id.toString() !== userId.toString());
     } else {
       photo.likes.push(userId);
