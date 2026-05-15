@@ -1,4 +1,4 @@
-/* global describe, it */
+/* global describe, it, before */
 /**
  * Mocha test of Project 3 web API with login functionality. Run using this command:
  *   node_modules/.bin/mocha serverApiTest.js
@@ -648,12 +648,18 @@ describe("Photo App: Server API Tests", function () {
         let body = '';
         res.on('data', (chunk) => { body += chunk; });
         res.on('end', () => {
-          if (res.statusCode !== 200) return done(new Error('Failed to fetch photosOfUser: ' + res.statusCode));
+          if (res.statusCode !== 200) {
+            return done(new Error('Failed to fetch photosOfUser: ' + res.statusCode));
+          }
+
           const photos = JSON.parse(body);
-          if (!Array.isArray(photos) || photos.length === 0) return done(new Error('No photos found for session user'));
+          if (!Array.isArray(photos) || photos.length === 0) {
+            return done(new Error('No photos found for session user'));
+          }
+
           seedPhoto = photos[0];
           likedPhotoPath = `/photos/${seedPhoto._id}/like`;
-          done();
+          return done();
         });
       });
 

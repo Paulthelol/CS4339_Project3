@@ -85,9 +85,9 @@ function UserPhotos() {
 
   return (
     <div>
-      {photosLoading || photos?.length === 0 && (
+      {photosLoading || (photos?.length === 0 && (
         <Typography variant="body1">No photos found for this user.</Typography>
-      )}
+      ))}
       <div>
         {/* display photos in a list */}
         {isLoading ? (
