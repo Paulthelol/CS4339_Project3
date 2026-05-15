@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, Toolbar, Typography } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams, useMatch } from 'react-router-dom';
 import uploadImage from '../../lib/cloudinary';
@@ -94,17 +94,23 @@ function TopBar() {
             <Typography variant="body1">Error loading user info.</Typography>
           ) : (
             <div className="topbar-content">
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Link to="/">
                   <Typography variant="h5" color="inherit">
                     {sessionUser ? `${sessionUser.first_name} ${sessionUser.last_name}` : 'Home'}
                   </Typography>
                 </Link>
-                <Typography variant="body1">
-                  {sessionUser && (
-                    <Typography onClick={() => setOpenUploadModal(!openUploadModal)}>Upload Photo</Typography>
-                  )}
-                </Typography>
+                {sessionUser && (
+                  <Button
+                    variant="contained"
+                    color="success"
+                    size="small"
+                    onClick={() => setOpenUploadModal(!openUploadModal)}
+                    sx={{ textTransform: 'none', mt: 0 }}
+                  >
+                    Upload Photo
+                  </Button>
+                )}
               </div>
               <div>
                 <Typography fontWeight="bold">
@@ -139,11 +145,11 @@ function TopBar() {
             <button className="modal-button" onClick={() => {
               setOpenUploadModal(false);
               setSelectedFile(null);
-              }}>Close
+            }}>Close
             </button>
           </div>
         </div>
-       )}
+      )}
     </>
   );
 }
