@@ -11,6 +11,11 @@ const app = express();
 
 app.use(express.json());
 
+// If running behind a proxy (Render, Heroku, etc.) trust the first proxy
+// so express-session can set secure cookies when the connection is TLS.
+const isProd = process.env.NODE_ENV === 'production';
+if (isProd) app.set('trust proxy', 1);
+
 app.get("/health", (req, res) => {
   if (mongoose.connection.readyState === 1) {
     return res.status(200).send("ok");
@@ -19,18 +24,26 @@ app.get("/health", (req, res) => {
   return res.status(503).send("database not ready");
 });
 
+// Ensure session cookies are configured for cross-site usage when in production.
 app.use(
   session({
-    secret: "none",
+    secret: process.env.SESSION_SECRET || 'none',
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: isProd, // requires HTTPS; must be true when SameSite=None
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+    },
   }),
 );
 
 // define these in env and import in this file
 const port = process.env.PORT || 3001;
 const mongoUrl = process.env.MONGODB_URI || process.env.MONGO_URL;
-const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:3000";
+// Normalize CLIENT_ORIGIN (strip trailing slash) to avoid CORS mismatches
+const clientOrigin = (process.env.CLIENT_ORIGIN || 'http://localhost:3000').replace(/\/$/, '');
 
 // Enable CORS for frontend running on a different port
 app.use(

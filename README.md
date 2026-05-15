@@ -1,4 +1,8 @@
-# Project 3: Authentication, Server State, and Mutations
+# Project Final Submission:
+
+## Deployed Links
+- Frontend: [https://cs-4339-project3-ecru.vercel.app/](https://cs-4339-project3-ecru.vercel.app/)
+- Backend: [https://cs4339-project3-c1wl.onrender.com](https://cs4339-project3-c1wl.onrender.com)
 
 ## Prerequisites
 - Node.js LTS (>= 18), npm (>= 9)
