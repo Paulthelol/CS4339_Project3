@@ -85,12 +85,12 @@ function UserPhotos() {
 
   return (
     <div>
-      {photosLoading || photos?.length === 0 && (
+      {!photosLoading && photos?.length === 0 && (
         <Typography variant="body1">No photos found for this user.</Typography>
       )}
       <div>
         {/* display photos in a list */}
-        {isLoading ? (
+        {isLoading || photosLoading ? (
           <Typography variant="body1">Loading photos...</Typography>
         ) : (userInfoError || photosError) ? (
           <Typography variant="body1">Error loading photos.</Typography>
