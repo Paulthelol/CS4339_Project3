@@ -15,7 +15,7 @@ import mongoose from "mongoose";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bluebird from "bluebird";
 import dotenv from "dotenv";
-import models from "./modelData/photoApp.js";
+import models from "../modelData/photoApp.js";
 
 // Load the Mongoose schema for Use and Photo
 import User from "./schema/user.js";
